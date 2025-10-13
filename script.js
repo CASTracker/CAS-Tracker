@@ -57,6 +57,7 @@ async function cargarDatosDesdeFirestore() {
       localStorage.setItem("reflexionesCAS", JSON.stringify(data.reflexiones || []));
       localStorage.setItem("horarioCAS", JSON.stringify(data.horario || []));
       console.log("Datos sincronizados desde Firestore");
+      actualizarTotales();
     } else {
       await setDoc(doc(db, "usuarios", userUID), {
         actividades: [], reflexiones: [], horario: []
