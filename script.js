@@ -148,22 +148,22 @@ function eliminarActividad(index) {
 // Calcula los totales de horas por categoría
 function actualizarTotales() {
   const actividades = JSON.parse(localStorage.getItem("actividadesCAS")) || [];
-  let creatividad = 0, actividad = 0, servicio = 0;
-
+  let totalC = 0, totalA = 0, totalS = 0;
   actividades.forEach(a => {
-    if (a.categoria === "Creatividad") creatividad += a.horas;
-    if (a.categoria === "Actividad") actividad += a.horas;
-    if (a.categoria === "Servicio") servicio += a.horas;
+    if (a.categoria === "C") totalC += a.horas;
+    if (a.categoria === "A") totalA += a.horas;
+    if (a.categoria === "S") totalS += a.horas;
   });
+  const elC = document.getElementById("totalC");
+  if (elC) elC.textContent = `${totalC} horas`;
+  const elA = document.getElementById("totalA");
+  if (elA) elA.textContent = `${totalA} horas`;
+  const elS = document.getElementById("totalS");
+  if (elS) elS.textContent = `${totalS} horas`;
 
-  const total = creatividad + actividad + servicio;
-
-  if (document.getElementById("totalCreatividad")) document.getElementById("totalCreatividad").textContent = creatividad;
-  if (document.getElementById("totalActividad")) document.getElementById("totalActividad").textContent = actividad;
-  if (document.getElementById("totalServicio")) document.getElementById("totalServicio").textContent = servicio;
-  if (document.getElementById("totalHoras")) document.getElementById("totalHoras").textContent = total;
-
-  console.log(`Totales: C=${creatividad}, A=${actividad}, S=${servicio}, Total=${total}`);
+  const totalGeneral = totalC + totalA + totalS;
+const elG = document.getElementById("totalGeneral");
+if (elG) elG.textContent = `${totalGeneral} horas`;
 }
 
 // === REFLEXIONES ===
