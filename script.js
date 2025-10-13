@@ -1,6 +1,6 @@
 // === Firebase imports shared from firebase-app.js ===
 import { auth, db } from "./firebase-app.js";
-import { onAuthStateChanged, signOut, getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 // === Variables globales ===
@@ -11,9 +11,7 @@ onAuthStateChanged(auth, async (user) => {
   if (user) {
     userUID = user.uid;
     console.log('Usuario activo:', user.email, userUID);
-    // Cargar datos desde Firestore al iniciar sesión
     await cargarDatosDesdeFirestore();
-    // Mostrar la UI normalmente
     actualizarTotales();
     mostrarActividades();
     mostrarReflexiones();
@@ -21,7 +19,6 @@ onAuthStateChanged(auth, async (user) => {
     cargarHorario();
   } else {
     userUID = null;
-    // Si estamos en una página protegida, redirigir al login
     const path = window.location.pathname;
     if (!path.endsWith('index.html') && !path.endsWith('/')) {
       window.location.href = 'index.html';
@@ -61,7 +58,6 @@ async function cargarDatosDesdeFirestore() {
       localStorage.setItem("horarioCAS", JSON.stringify(data.horario || []));
       console.log("Datos sincronizados desde Firestore");
     } else {
-      // inicializar documento vacío si no existe
       await setDoc(doc(db, "usuarios", userUID), {
         actividades: [], reflexiones: [], horario: []
       }, { merge: true });
@@ -138,15 +134,35 @@ function mostrarActividades() {
 }
 
 function eliminarActividad(index) {
-  const confirmar = confirm("¿Estás seguro de que quieres eliminar esta actividad?");
-  if (!confirmar) return;
-
+  if (!confirm("¿Estás seguro de que quieres eliminar esta actividad?")) return;
   const actividades = JSON.parse(localStorage.getItem("actividadesCAS")) || [];
   actividades.splice(index, 1);
   localStorage.setItem("actividadesCAS", JSON.stringify(actividades));
   guardarDatosEnFirestore();
   mostrarActividades();
   actualizarTotales();
+}
+
+// === FUNCION FALTANTE ===
+// Calcula los totales de horas por categoría
+function actualizarTotales() {
+  const actividades = JSON.parse(localStorage.getItem("actividadesCAS")) || [];
+  let creatividad = 0, actividad = 0, servicio = 0;
+
+  actividades.forEach(a => {
+    if (a.categoria === "Creatividad") creatividad += a.horas;
+    if (a.categoria === "Actividad") actividad += a.horas;
+    if (a.categoria === "Servicio") servicio += a.horas;
+  });
+
+  const total = creatividad + actividad + servicio;
+
+  if (document.getElementById("totalCreatividad")) document.getElementById("totalCreatividad").textContent = creatividad;
+  if (document.getElementById("totalActividad")) document.getElementById("totalActividad").textContent = actividad;
+  if (document.getElementById("totalServicio")) document.getElementById("totalServicio").textContent = servicio;
+  if (document.getElementById("totalHoras")) document.getElementById("totalHoras").textContent = total;
+
+  console.log(`Totales: C=${creatividad}, A=${actividad}, S=${servicio}, Total=${total}`);
 }
 
 // === REFLEXIONES ===
@@ -171,6 +187,7 @@ function guardarReflexion(e) {
   guardarDatosEnFirestore();
   e.target.reset();
   mostrarReflexiones();
+  mostrarReflexionesPreview();
 }
 
 function mostrarReflexiones() {
