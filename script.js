@@ -143,6 +143,7 @@ function eliminarActividad(index) {
   mostrarActividades();
   actualizarTotales();
 }
+window.eliminarActividad = eliminarActividad;
 
 // === FUNCION FALTANTE ===
 // Calcula los totales de horas por categoría
@@ -293,6 +294,13 @@ function cargarHorario() {
   });
 }
 
+function limpiarHorario() {
+  localStorage.removeItem("horarioCAS");
+  document.querySelectorAll("#tablaHorario tbody tr td:nth-child(2)").forEach(td => td.textContent = "");
+  alert("Horario limpiado 🧹");
+}
+window.limpiarHorario = limpiarHorario;
+
 // === CONTADOR DE PALABRAS ===
 function contarPalabras(text) {
   if (!text) return 0;
@@ -343,6 +351,8 @@ function exportarDatos() {
   a.download = "cas_backup.json";
   a.click();
 }
+window.exportarDatos = exportarDatos;
+
 
 function exportarReflexionWord(ref) {
   const { titulo, texto, fecha } = ref;
