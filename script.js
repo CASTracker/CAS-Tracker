@@ -11,7 +11,7 @@ onAuthStateChanged(auth, async (user) => {
   if (user) {
     userUID = user.uid;
     console.log('Usuario activo:', user.email, userUID);
-    await cargarDatosDesdeFirestore();
+    await cargarDatosDesdeFirestore(); 
     actualizarTotales();
     mostrarActividades();
     mostrarReflexiones();
