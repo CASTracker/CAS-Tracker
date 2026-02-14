@@ -200,8 +200,13 @@ function mostrarReflexiones() {
   cont.innerHTML = "";
 
   reflexiones.slice().reverse().forEach(ref => {
+
     const div = document.createElement("div");
     div.className = "reflexion";
+
+    // HEADER (Siempre visible)
+    const header = document.createElement("div");
+    header.className = "reflexion-header";
 
     const titulo = document.createElement("h3");
     titulo.textContent = ref.titulo;
@@ -209,31 +214,53 @@ function mostrarReflexiones() {
     const fecha = document.createElement("small");
     fecha.textContent = ref.fecha;
 
+    header.appendChild(titulo);
+    header.appendChild(fecha);
+
+    // BODY (Oculto por defecto)
+    const body = document.createElement("div");
+    body.className = "reflexion-body";
+
     const texto = document.createElement("p");
     texto.textContent = ref.texto;
 
     const btnEliminar = document.createElement("button");
     btnEliminar.textContent = "🗑️ Eliminar";
+    btnEliminar.className = "btn-eliminar";
     btnEliminar.addEventListener("click", () => eliminarReflexion(ref.id));
-
+    
     const btnEditar = document.createElement("button");
     btnEditar.textContent = "✏️ Editar";
+    btnEditar.className = "btn-editar";
     btnEditar.addEventListener("click", () => editarReflexion(ref.id));
-
+    
     const btnExportar = document.createElement("button");
     btnExportar.textContent = "📄 Exportar a Word";
+    btnExportar.className = "btn-exportar";
     btnExportar.addEventListener("click", () => exportarReflexionWord(ref));
 
-    div.appendChild(titulo);
-    div.appendChild(fecha);
-    div.appendChild(texto);
-    div.appendChild(btnEditar);
-    div.appendChild(btnEliminar);
-    div.appendChild(btnExportar);
 
+    body.appendChild(texto);
+    body.appendChild(btnEditar);
+    body.appendChild(btnEliminar);
+    body.appendChild(btnExportar);
+
+    // Toggle al hacer click en el header
+    header.addEventListener("click", () => {
+  if (body.style.maxHeight) {
+    body.style.maxHeight = null;
+    body.style.opacity = "0";
+  } else {
+    body.style.maxHeight = body.scrollHeight + "px";
+    body.style.opacity = "1";
+  }
+});
+    div.appendChild(header);
+    div.appendChild(body);
     cont.appendChild(div);
   });
 }
+
 
 function eliminarReflexion(id) {
   const confirmar = confirm("¿Seguro que quieres eliminar esta reflexión?");
